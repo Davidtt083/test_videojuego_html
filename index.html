@@ -3,689 +3,548 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contabilidad Gerencial: Desafío 90s</title>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Snake Game con Preguntas</title>
     <style>
+        /* Definición de la paleta de colores */
+        :root {
+            --color-primary: #006FBA; /* Azul */
+            --color-secondary: #F68B1F; /* Naranja */
+            --color-background: #063F60; /* Azul Oscuro */
+            --color-text-light: #ffffff;
+            --color-text-dark: #000000;
+            --color-snake-head: #006FBA; /* Azul para la cabeza */
+            --color-snake-body: #005CA3; /* Tono más oscuro de azul para el cuerpo */
+            --color-food: #F68B1F; /* Naranja para la comida */
+            --color-game-over: #F44336; /* Rojo para Game Over */
+            --color-correct: #4CAF50; /* Verde para respuesta correcta */
+            --color-incorrect: #F4436; /* Rojo para respuesta incorrecta */
+        }
+
         body {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #1a1a1a; /* Dark background */
-            color: #00ff00; /* Bright green text */
+            font-family: 'Gotham', sans-serif; /* Asegúrate de que 'Gotham' esté disponible */
+            margin: 0;
+            overflow: hidden; /* Evita barras de desplazamiento */
+            background-color: var(--color-background);
+            color: var(--color-text-light);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow: auto; /* Allow body scroll if needed */
+            position: relative;
         }
 
         .game-container {
-            background-color: #000000; /* Black background for main container */
-            border: 4px solid #00ffff; /* Bright cyan border */
-            box-shadow: 0 0 15px #00ffff; /* Bright shadow */
-            padding: 30px;
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-            overflow-y: auto; /* Allow vertical scroll if content is too long */
-            max-height: 95vh; /* Limit height to fit screen */
-            position: relative; /* Needed for positioning child elements */
-        }
-
-        h1, h2 {
-            color: #ffff00; /* Yellow titles */
-            text-shadow: 2px 2px #ff00ff; /* Magenta shadow */
-            margin-bottom: 20px;
-        }
-
-        .content-box {
-            background-color: #333333; /* Dark grey background for content boxes */
-            border: 2px solid #ffffff; /* White border */
+            position: relative; /* Para posicionar la imagen de fondo */
+            background-color: rgba(6, 63, 96, 0.9); /* Azul oscuro semi-transparente */
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
             padding: 20px;
-            margin-bottom: 20px;
-            text-align: left;
-            line-height: 1.6; /* Line spacing */
-            white-space: pre-wrap; /* Respect line breaks in text */
-            min-height: 100px; /* Minimum height for typing effect */
-        }
-
-        .options-container button {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #ff00ff; /* Magenta buttons */
-            color: #ffffff; /* White text */
-            border: 2px solid #ffffff; /* White border */
-            padding: 15px 20px;
-            margin: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s, color 0.3s;
-            box-shadow: 3px 3px #ffff00; /* Yellow shadow */
-            display: block; /* Each button on a new line */
-            width: calc(100% - 24px); /* Almost full width with padding and border */
-            text-align: left; /* Align text to the left */
-        }
-
-        .options-container button:hover {
-            background-color: #ffff00; /* Yellow background on hover */
-            color: #ff00ff; /* Magenta text on hover */
-            box-shadow: 3px 3px #ff00ff; /* Magenta shadow */
-        }
-
-        .feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border: 2px solid;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .feedback.correct {
-            border-color: #00ff00; /* Green border for correct */
-            color: #00ff00; /* Green text for correct */
-            background-color: #003300; /* Dark green background */
-        }
-
-        .feedback.incorrect {
-            border-color: #ff0000; /* Red border for incorrect */
-            color: #ff0000; /* Red text for incorrect */
-            background-color: #330000; /* Dark red background */
-        }
-
-        .game-button { /* General class for game buttons */
-            font-family: 'Press Start 2P', cursive;
-            background-color: #00ffff; /* Cyan button */
-            color: #000000; /* Black text */
-            border: 2px solid #ffffff; /* White border */
-            padding: 15px 25px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s, color 0.3s;
-            box-shadow: 4px 4px #ff00ff; /* Magenta shadow */
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .game-button:hover {
-            background-color: #ff00ff; /* Magenta background on hover */
-            color: #00ffff; /* Cyan text on hover */
-            box-shadow: 4px 4px #00ffff; /* Cyan shadow */
-        }
-
-        .start-button { /* Specific style for start button */
-             padding: 20px 30px;
-             font-size: 1.2rem;
-        }
-
-
-        .level-title {
-            color: #ffff00; /* Yellow level title */
-            margin-bottom: 15px;
-        }
-
-        .reflection-questions textarea {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #333333;
-            color: #00ff00;
-            border: 2px solid #ffffff;
-            padding: 10px;
-            width: calc(100% - 24px); /* Almost full width */
-            margin-bottom: 15px;
-            resize: vertical; /* Allow vertical resize */
-            min-height: 80px;
-        }
-
-        .popup {
-            display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #000000;
-            border: 4px solid #ffff00;
-            box-shadow: 0 0 20px #ffff00;
-            padding: 30px;
-            text-align: center;
-            z-index: 100;
-            max-width: 500px;
-            width: 90%;
-            /* Added: Max height and overflow for scroll */
-            max-height: 80vh; /* Adjust this height as needed */
-            overflow-y: auto;
-        }
-
-        .popup-content {
-            color: #00ff00;
-            line-height: 1.6;
-            white-space: pre-wrap; /* Respect line breaks */
-             /* Added: Allow scroll within content if needed */
-            overflow-y: auto;
-        }
-
-        .popup button {
-            font-family: 'Press Start 2P', cursive;
-            background-color: #ff00ff;
-            color: #ffffff;
-            border: 2px solid #ffffff;
-            padding: 10px 20px;
-            margin-top: 20px;
-            cursor: pointer;
-            font-size: 1rem;
-            box-shadow: 3px 3px #ffff00;
-        }
-
-        .popup button:hover {
-             background-color: #ffff00;
-            color: #ff00ff;
-            box-shadow: 3px 3px #ff00ff;
-        }
-
-         /* Style for the final reflection container */
-        .final-reflection {
-            display: none; /* Initially hidden */
-            text-align: left;
-        }
-
-         .final-reflection h2 {
-            text-align: center;
-         }
-
-
-        /* --- Level Map Styles --- */
-        .world-map {
-            position: relative;
-            width: 100%; /* Make the map container take full width */
-            padding-top: 60%; /* Maintain aspect ratio (e.g., 800x480 -> 480/800 = 0.6) */
-            background-image: url('html/images/mapa.png'); /* Pixelated map placeholder image */
-            background-size: cover; /* Scale image to cover the container */
-            background-position: center; /* Center the image */
-            border: 2px solid #ffffff;
-            margin-bottom: 20px;
-            box-sizing: border-box; /* Include padding and border in the element's total width and height */
-        }
-
-        .level-marker { /* Container for icon and completion marker */
-            position: absolute;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform: translate(-50%, -50%); /* Center the marker */
         }
 
-        .level-icon { /* Level icon styles */
-            width: 50px;
-            height: 50px;
-            background-color: #ff00ff;
-            border: 3px solid #ffff00;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ffffff;
-            cursor: pointer;
-            transition: transform 0.3s, background-color 0.3s;
-            box-shadow: 2px 2px #00ffff;
-            position: relative; /* Needed for completion indicator */
-             z-index: 1; /* Ensure icon is above the map */
-        }
-
-        .level-icon:hover:not(.completed) { /* Hover effect only if not completed */
-            transform: scale(1.1);
-            background-color: #ffff00;
-            color: #ff00ff;
-            box-shadow: 2px 2px #ff00ff;
-        }
-
-        .level-icon.completed {
-            background-color: #00ff00; /* Green for completed levels */
-            border-color: #ffffff;
-            box-shadow: 2px 2px #ffffff;
-            cursor: default; /* Not clickable if completed */
-        }
-
-        .completion-indicator { /* Completion indicator */
-            display: none; /* Hidden by default */
+        /* Estilo para imágenes de fondo */
+        .background-image {
             position: absolute;
-            top: -15px; /* Position above the icon */
-            width: 30px;
-            height: 30px;
-            background-color: #ffff00; /* Yellow background */
-            border: 2px solid #ffffff;
-            color: #000000; /* Black text */
-            font-size: 1.2rem;
-            font-weight: bold;
-            display: flex;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cubre el área sin distorsionar */
+            z-index: -1; /* Detrás del contenido */
+            opacity: 0.3; /* Ligeramente transparente */
+            /* Removida la transición directa para usar animaciones */
+        }
+
+        .background-image.animate-in {
+            animation: imageSlideIn 1s ease-out forwards; /* Usar nueva animación */
+        }
+
+        .background-image.animate-out {
+            animation: imageFadeOut 1s ease-out forwards; /* Mantener fadeOut si se desea */
+        }
+
+        /* Nueva animación para entrada desde arriba */
+        @keyframes imageSlideIn {
+            from { opacity: 0; transform: translateY(-20px); } /* Empieza un poco arriba y transparente */
+            to { opacity: 0.3; transform: translateY(0); } /* Termina en su posición y con opacidad */
+        }
+
+        @keyframes imageFadeOut {
+            from { opacity: 0.3; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+
+
+        h1 {
+            color: var(--color-secondary); /* Naranja para títulos */
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        canvas {
+            border: 5px solid var(--color-primary); /* Borde azul para el área de juego */
+            background-color: rgba(255, 255, 255, 0.1); /* Fondo ligeramente transparente para el canvas */
+            display: block; /* Elimina espacio extra debajo del canvas */
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .score-display {
+            font-size: 1.5em;
+            color: var(--color-secondary); /* Naranja para el puntaje */
+            margin-bottom: 20px;
+        }
+
+        .game-over-message, .thank-you-message {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+            display: none; /* Oculto por defecto */
+        }
+
+        .game-over-message {
+             color: var(--color-game-over); /* Rojo para Game Over */
+        }
+
+         .thank-you-message {
+             color: var(--color-correct); /* Verde para agradecimiento */
+         }
+
+
+         .button {
+            display: inline-block;
+            background-color: var(--color-primary); /* Azul para botones */
+            color: var(--color-text-light);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-family: 'Gotham', sans-serif;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            text-decoration: none; /* Para usar en enlaces si es necesario */
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .button:hover {
+            background-color: #005CA3; /* Tono más oscuro de azul */
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            background-color: #004A8F; /* Tono aún más oscuro */
+            transform: translateY(0);
+        }
+
+        /* Estilos para el modal de preguntas */
+        .question-modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; /* Posición fija sobre todo */
+            z-index: 10; /* Por encima del juego */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Permite scroll si el contenido es largo */
+            background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro semi-transparente */
             justify-content: center;
             align-items: center;
-            z-index: 2; /* Ensure it's above the icon */
-             box-shadow: 1px 1px #ff00ff;
         }
 
-        .level-icon.completed + .completion-indicator {
-            display: flex; /* Show when the icon is completed */
-        }
-
-
-        /* Positioning of level markers on the map */
-        #levelMarker1 { top: 30%; left: 15%; }
-        #levelMarker2 { top: 20%; left: 40%; }
-        #levelMarker3 { top: 50%; left: 60%; }
-        #levelMarker4 { top: 70%; left: 35%; }
-
-        /* Styles for character images */
-        .character-image {
-            width: 100px; /* Container size */
-            height: 100px;
-            background-color: #ff00ff; /* Magenta placeholder background */
-            border: 3px solid #ffff00; /* Yellow border */
-            margin: 20px auto; /* Center the image */
-            display: flex; /* Use flexbox to center content */
-            justify-content: center; /* Center content horizontally */
-            align-items: center; /* Center content vertically */
-            box-shadow: 3px 3px #00ffff; /* Cyan shadow */
-            font-size: 0.8rem;
-            color: #ffffff;
+        .modal-content {
+            background-color: var(--color-background); /* Azul oscuro */
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%; /* Ancho del modal */
+            max-width: 600px; /* Ancho máximo */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             text-align: center;
-            overflow: hidden; /* Hide anything outside the container */
+            position: relative; /* Para posicionar el botón de cerrar si se añade */
         }
 
-        .character-image img {
-            display: block; /* Remove extra space below image */
-            max-width: 100%; /* Make image responsive within its container */
-            height: auto; /* Maintain aspect ratio */
+        .modal-content h3 {
+            color: var(--color-secondary); /* Naranja para el título de la pregunta */
+            margin-bottom: 20px;
         }
 
-
-         /* Typing effect cursor */
-        .typing-text::after {
-            content: '|';
-            animation: blink-caret .75s step-end infinite;
+        .answer-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Espacio entre botones */
         }
 
-        @keyframes blink-caret {
-            from, to { opacity: 0; }
-            50% { opacity: 1; }
+        .answer-button {
+             background-color: var(--color-primary); /* Azul para botones de respuesta */
+             color: var(--color-text-light);
+             padding: 10px 20px;
+             border: none;
+             border-radius: 5px;
+             cursor: pointer;
+             font-size: 1em;
+             font-family: 'Gotham', sans-serif;
+             transition: background-color 0.3s ease;
+        }
+
+        .answer-button:hover {
+             background-color: #005CA3; /* Tono más oscuro de azul */
+        }
+
+         .answer-button.correct {
+             background-color: var(--color-correct); /* Verde si es la respuesta correcta */
+         }
+
+         .answer-button.incorrect {
+             background-color: var(--color-incorrect); /* Rojo si es la respuesta incorrecta */
+         }
+
+
+        /* Responsividad básica para el modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .answer-button {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
         }
 
 
     </style>
 </head>
 <body>
-
-    <div class="game-container" id="gameContainer">
-
-        <div id="introScreen">
-            <h1>Contabilidad Gerencial</h1>
-            <h2>Desafío 90's</h2>
-             <div class="character-image"><img src="html\images\personaje_1.png" alt="Personaje 1"></div> <div class="content-box">
-                <p id="introText" class="typing-text"></p>
-             </div>
-            <button class="game-button start-button" id="startButton">Comenzar Desafío</button>
-        </div>
-
-        <div id="caseStudyScreen" style="display: none;">
-            <h2>Caso o Ejercicio</h2>
-             <div class="character-image"><img src="html\images\personaje_2.png" alt="Personaje 2"></div> <div class="content-box">
-                <p id="caseStudyText" class="typing-text"></p>
-             </div>
-             <button class="game-button" id="startMapButton">¡Aceptar el Desafío!</button>
-        </div>
-
-        <div id="worldMapScreen" style="display: none;">
-            <h2>Mapa del Negocio</h2>
-            <div class="world-map">
-                <div class="level-marker" id="levelMarker1" style="top: 30%; left: 15%;">
-                    <div class="level-icon" id="levelIcon1" data-level="0">1</div>
-                    <div class="completion-indicator">✓</div> </div>
-                 <div class="level-marker" id="levelMarker2" style="top: 20%; left: 40%;">
-                    <div class="level-icon" id="levelIcon2" data-level="1">2</div>
-                    <div class="completion-indicator">✓</div>
-                </div>
-                 <div class="level-marker" id="levelMarker3" style="top: 50%; left: 60%;">
-                    <div class="level-icon" id="levelIcon3" data-level="2">3</div>
-                    <div class="completion-indicator">✓</div>
-                </div>
-                 <div class="level-marker" id="levelMarker4" style="top: 70%; left: 35%;">
-                    <div class="level-icon" id="levelIcon4" data-level="3">4</div>
-                    <div class="completion-indicator">✓</div>
-                </div>
-            </div>
-             <div class="content-box">
-                 <p>Haz clic en el icono del nivel para comenzar el desafío.</p>
-             </div>
-             <button class="game-button" id="backToCaseStudyButton">Regresar al Caso de Estudio</button>
-        </div>
-
-
-        <div id="gameLevels" style="display: none;">
-            <h2 id="levelTitle" class="level-title"></h2>
-            <div class="content-box">
-                <p id="questionText" class="typing-text"></p>
-            </div>
-            <div id="optionsContainer" class="options-container">
-                </div>
-            <div id="feedback" class="feedback" style="display: none;">
-                </div>
-             <button class="game-button" id="backToMapButton">Regresar al Mapa</button>
-        </div>
-
-        <div id="finalReflectionScreen" class="final-reflection">
-             <h2>Reflexión Final</h2>
-              <div class="character-image"><img src="https://placehold.co/100x100/00ffff/000000?text=PERSONAJE+3" alt="Personaje 3"></div> <div class="content-box">
-                 <p id="reflectionIntroText" class="typing-text"></p>
-                 </div>
-             <div class="content-box">
-                <p>¿Has aplicado correctamente los conceptos de contabilidad gerencial en cada nivel?</p>
-                <textarea id="reflection1"></textarea>
-                <p>¿Has identificado las herramientas adecuadas para resolver los problemas planteados?</p>
-                <textarea id="reflection2"></textarea>
-                <p>¿Has diferenciado claramente entre contabilidad gerencial y financiera?</p>
-                <textarea id="reflection3"></textarea>
-                <p>¿Has relacionado las funciones de la contabilidad gerencial con la toma de decisiones estratégicas?</p>
-                <textarea id="reflection4"></textarea>
-             </div>
-             <button class="game-button" id="showFinalMessageButton">Enviar Reflexión</button>
-        </div>
-
-
-        <div id="finalPopup" class="popup">
-            <div class="popup-content">
-                <p>Recuerda que...</p>
-                <br>
-                <p>La contabilidad gerencial es clave para la planificación, el control y la toma de decisiones internas. Utilizando herramientas como análisis de costos, presupuestos e indicadores de gestión se alcanzan los objetivos fundamentales.</p>
-                <br>
-                <p>La contabilidad financiera se enfoca en informes externos, mientras que la gerencial en decisiones internas; sus principales objetivos son tanto como la eficiencia operativa y la rentabilidad, ya que esto es el punto central son centrales en la contabilidad gerencial.</p>
-                <br>
-                 <p>¡Felicidades! Has dominado los conceptos de contabilidad gerencial y los has aplicado exitosamente en un contexto real.</p>
-                 <br>
-                 <p>No olvides que puedes repasar tus conceptos clave cada que lo necesites, ya que la práctica es esencial para afianzar el aprendizaje.</p>
-            </div>
-            <button id="closePopupButton">Cerrar</button>
-        </div>
-
+    <div class="game-container">
+        <img src="" alt="Imagen de fondo para el juego" class="background-image animate-in"> <h1>Juego de la Serpiente</h1>
+        <canvas id="gameCanvas" width="400" height="400"></canvas> <div class="score-display">Puntaje: <span id="score">0</span></div>
+        <div class="game-over-message" id="gameOverMessage">¡Game Over!</div>
+        <div class="thank-you-message" id="thankYouMessage">¡Felicidades! ¡Has completado el desafío!</div>
+        <button class="button" id="restartButton" style="display: none;" onclick="restartGame()">Reiniciar Juego</button>
     </div>
 
+    <div id="questionModal" class="question-modal">
+        <div class="modal-content">
+            <h3 id="questionText"></h3>
+            <div id="answerButtons" class="answer-buttons">
+                </div>
+        </div>
+    </div>
+
+
     <script>
-        // Define game data: levels, questions, options, and feedback
-        const gameData = [
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreDisplay = document.getElementById('score');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const thankYouMessage = document.getElementById('thankYouMessage');
+        const restartButton = document.getElementById('restartButton');
+        const questionModal = document.getElementById('questionModal');
+        const questionText = document.getElementById('questionText');
+        const answerButtonsDiv = document.getElementById('answerButtons');
+
+
+        const gridSize = 20; // Tamaño de cada segmento de la serpiente y la comida
+        const canvasSize = canvas.width;
+        const margin = 2; // Margen para evitar los bordes (en número de cuadrículas)
+        const maxGridX = (canvasSize / gridSize) - margin;
+        const maxGridY = (canvasSize / gridSize) - margin;
+        const minGrid = margin -1; // Ajuste para que el mínimo sea 1, no 0
+
+        let snake = [{ x: 10, y: 10 }]; // Posición inicial de la serpiente (en cuadrículas)
+        let food = {};
+        let dx = 0; // Dirección en el eje x
+        let dy = 0; // Dirección en el eje y
+        let score = 0;
+        let gameRunning = true;
+        let gameInterval;
+        let questionsAnswered = 0; // Contador de preguntas respondidas correctamente
+
+        // Array de preguntas y respuestas
+        const questions = [
             {
-                level: 1,
-                title: "Nivel 1. Análisis de costos y rentabilidad",
-                question: "La empresa está considerando lanzar una nueva línea de muebles ecológicos. ¿Qué herramienta de la contabilidad gerencial sería más útil para evaluar la rentabilidad de este proyecto?",
-                options: [
-                    { text: "a) Estado de resultados", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza herramientas para evaluar la viabilidad de proyectos." },
-                    { text: "b) Análisis de costos y proyecciones financieras", correct: true, feedback: "¡Correcto! El análisis de costos y las proyecciones financieras son esenciales para evaluar la rentabilidad de un nuevo proyecto." },
-                    { text: "c) Balance general", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza herramientas para evaluar la viabilidad de proyectos." },
-                    { text: "d) Notas a los estados financieros", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza herramientas para evaluar la viabilidad de proyectos." }
+                question: "¿Qué sistema económico se describe en el caso de los smartphones?",
+                answers: [
+                    { text: "Economía de planificación central", correct: false },
+                    { text: "Economía de libre mercado", correct: true },
+                    { text: "Economía mixta", correct: false },
+                    { text: "Economía tradicional", correct: false }
                 ]
             },
             {
-                level: 2,
-                title: "Nivel 2. Evaluación del desempeño",
-                question: "¿Qué herramienta de la contabilidad gerencial podrías utilizar para medir la eficiencia del departamento de producción?",
-                options: [
-                    { text: "a) Indicadores de gestión (KPI)", correct: true, feedback: "¡Correcto! Los indicadores de gestión (KPI) son ideales para medir la eficiencia operativa." },
-                    { text: "b) Estado de flujos de efectivo", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza indicadores para evaluar el desempeño." },
-                    { text: "c) Registro de transacciones históricas", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza indicadores para evaluar el desempeño." },
-                    { text: "d) Informes fiscales", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza indicadores para evaluar el desempeño." }
+                question: "En el caso de los smartphones, ¿quién determina principalmente el precio de los dispositivos?",
+                answers: [
+                    { text: "El gobierno", correct: false },
+                    { text: "Las empresas productoras", correct: false },
+                    { text: "La interacción entre oferta y demanda", correct: true },
+                    { text: "Los consumidores", correct: false }
                 ]
             },
             {
-                level: 3,
-                title: "Nivel 3. Toma de decisiones estratégicas",
-                question: "La empresa está considerando reducir costos. ¿Qué decisión apoyada por la contabilidad gerencial sería más efectiva?",
-                options: [
-                    { text: "a) Reducir la calidad de los materiales para abaratar costos", correct: false, feedback: "Revisa cómo la contabilidad gerencial apoya decisiones basadas en datos para mejorar la eficiencia." },
-                    { text: "b) Optimizar los procesos de producción para reducir desperdicios", correct: true, feedback: "¡Correcto! Optimizar los procesos de producción es una decisión estratégica respaldada por la contabilidad gerencial." },
-                    { text: "c) Aumentar los precios de venta sin justificación", correct: false, feedback: "Revisa cómo la contabilidad gerencial apoya decisiones basadas en datos para mejorar la eficiencia." },
-                    { text: "d) Ignorar los costos y enfocarse solo en las ventas", correct: false, feedback: "Revisa cómo la contabilidad gerencial apoya decisiones basadas en datos para mejorar la eficiencia." }
+                question: "¿Qué fomenta la competencia entre empresas en este mercado?",
+                answers: [
+                    { text: "La formación de monopolios", correct: false },
+                    { text: "La intervención total del Estado", correct: false },
+                    { text: "La innovación y mejora de la calidad", correct: true },
+                    { text: "La disminución de opciones para el consumidor", correct: false }
                 ]
             },
             {
-                level: 4,
-                title: "Nivel 4. Planificación y control",
-                question: "¿Qué herramienta de la contabilidad gerencial te permitiría comparar los resultados reales con los presupuestados?",
-                options: [
-                    { text: "a) Análisis de variaciones", correct: true, feedback: "¡Correcto! El análisis de variaciones permite comparar resultados reales con los presupuestados." },
-                    { text: "b) Estado de resultados", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza el análisis de variaciones para el control financiero." },
-                    { text: "c) Estado de situación financiera", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza el análisis de variaciones para el control financiero." },
-                    { text: "d) Notas a los estados financieros", correct: false, feedback: "Revisa cómo la contabilidad gerencial utiliza el análisis de variaciones para el control financiero." }
+                question: "¿Cuál es el papel del gobierno en el mercado descrito en el caso?",
+                answers: [
+                    { text: "Intervención total en la producción y precios", correct: false },
+                    { text: "Un papel mínimo, actuando como regulador de fallas de mercado", correct: true },
+                    { text: "Control total sobre la oferta y la demanda", correct: false },
+                    { text: "No tiene ningún papel", correct: false }
                 ]
             }
+            // Puedes añadir más preguntas aquí si lo deseas
         ];
 
-        let currentLevelIndex = -1; // Current level index (-1 means not in a level)
-        const introScreen = document.getElementById('introScreen');
-        const caseStudyScreen = document.getElementById('caseStudyScreen');
-        const worldMapScreen = document.getElementById('worldMapScreen');
-        const gameLevels = document.getElementById('gameLevels');
-        const finalReflectionScreen = document.getElementById('finalReflectionScreen');
-        const finalPopup = document.getElementById('finalPopup');
+        let currentQuestionIndex = 0; // Índice de la pregunta actual
 
-        const startButton = document.getElementById('startButton');
-        const startMapButton = document.getElementById('startMapButton'); // Button to go to map
-        const backToCaseStudyButton = document.getElementById('backToCaseStudyButton'); // New button
-        const backToMapButton = document.getElementById('backToMapButton'); // New button
-        const levelTitle = document.getElementById('levelTitle');
-        const questionTextElement = document.getElementById('questionText'); // Element for question text
-        const optionsContainer = document.getElementById('optionsContainer');
-        const feedbackElement = document.getElementById('feedback');
-        const showFinalMessageButton = document.getElementById('showFinalMessageButton');
-        const closePopupButton = document.getElementById('closePopupButton');
-        const levelIcons = document.querySelectorAll('.level-icon'); // Select all level icons
-        const completionIndicators = document.querySelectorAll('.completion-indicator'); // Select all indicators
+        // Generar posición aleatoria para la comida
+        function generateFood() {
+             if (questionsAnswered >= questions.length) {
+                 // Si ya se respondieron todas las preguntas, no generar más comida
+                 food = {}; // Vaciar el objeto food
+                 return;
+             }
 
-        // Texts for typing effect
-        const introFullText = `¡Bienvenido al desafío de Contabilidad Gerencial!
+            // Generar coordenadas dentro del margen
+            food = {
+                x: Math.floor(Math.random() * (maxGridX - minGrid + 1)) + minGrid,
+                y: Math.floor(Math.random() * (maxGridY - minGrid + 1)) + minGrid
+            };
 
-Prepárate para aplicar tus conocimientos en un entorno empresarial competitivo.
-Lee atentamente el caso práctico y prepárate para tomar decisiones clave.
-Recuerda repasar los conceptos clave de la Unidad 1 antes de comenzar.`;
-
-        const caseStudyFullText = `UNITEC_CG _U1_Practica_09
-
-Eres el gerente financiero de una empresa que fabrica muebles de oficina. La empresa enfrenta una disminución en sus márgenes de ganancia debido a la alta competencia en el mercado.
-
-El director general te ha pedido que prepares un informe sobre cómo la contabilidad gerencial puede ayudar a mejorar la toma de decisiones para optimizar costos, mejorar la eficiencia de producción y gestionar mejor los recursos.
-
-¿Estás listo?
-
-Antes de comenzar te recomendamos leer los conceptos clave de la unidad 1 (concepto, objetivos, características, funciones de la contabilidad gerencial y su relación con la contabilidad financiera).`;
-
-        const reflectionIntroFullText = `Antes de finalizar, responde las siguientes preguntas.`;
-
-
-        // Typing effect function
-        function typeWriterEffect(element, text, delay = 20) { // Reduced delay to 20ms
-            // Stop any previous typing effect on this element
-            if (element.typingTimeout) {
-                clearTimeout(element.typingTimeout);
+            // Asegurarse de que la comida no aparezca dentro de la serpiente
+            if (isFoodOnSnake()) {
+                generateFood();
             }
-            element.textContent = ''; // Clear current content
-            let i = 0;
-            function type() {
-                if (i < text.length) {
-                    element.textContent += text.charAt(i);
-                    i++;
-                    element.typingTimeout = setTimeout(type, delay); // Save timeout ID
-                } else {
-                     // Remove blinking cursor when finished
-                     element.classList.remove('typing-text');
-                     element.typingTimeout = null; // Clear timeout ID
-                }
-            }
-            // Add blinking cursor before starting to type
-            element.classList.add('typing-text');
-            type();
         }
 
-
-        // Show screen and activate typing effect if applicable
-        function showScreen(screenId) {
-            // Hide all screens first
-            introScreen.style.display = 'none';
-            caseStudyScreen.style.display = 'none';
-            worldMapScreen.style.display = 'none';
-            gameLevels.style.display = 'none';
-            finalReflectionScreen.style.display = 'none';
-            finalPopup.style.display = 'none';
-
-            // Show the requested screen
-            const targetScreen = document.getElementById(screenId);
-            targetScreen.style.display = 'block';
-
-             // Ensure scroll is at the top when changing screens
-            document.querySelector('.game-container').scrollTop = 0;
-
-             // Start typing effect if applicable
-            if (screenId === 'introScreen') {
-                 typeWriterEffect(document.getElementById('introText'), introFullText);
-            } else if (screenId === 'caseStudyScreen') {
-                 typeWriterEffect(document.getElementById('caseStudyText'), caseStudyFullText);
-            } else if (screenId === 'finalReflectionScreen') {
-                 typeWriterEffect(document.getElementById('reflectionIntroText'), reflectionIntroFullText);
-            }
-            /* The typing effect for the level question starts in loadLevel() */
+        // Verificar si la comida está en la serpiente
+        function isFoodOnSnake() {
+            return snake.some(segment => segment.x === food.x && segment.y === food.y);
         }
 
-        // Show intro screen on page load
-        window.onload = () => {
-            showScreen('introScreen');
-        };
-
-        // Event for "Comenzar Desafío" button
-        startButton.addEventListener('click', () => {
-            showScreen('caseStudyScreen');
-        });
-
-         // Event for "¡Aceptar el Desafío!" button (goes to map)
-        startMapButton.addEventListener('click', () => {
-            showScreen('worldMapScreen');
-        });
-
-        // Event for "Regresar al Caso de Estudio" button
-        backToCaseStudyButton.addEventListener('click', () => {
-            showScreen('caseStudyScreen');
-        });
-
-         // Event for "Regresar al Mapa" button
-        backToMapButton.addEventListener('click', () => {
-            showScreen('worldMapScreen');
-        });
-
-
-        // Add events to level icons on the map
-        levelIcons.forEach(icon => {
-            icon.addEventListener('click', () => {
-                const levelIndex = parseInt(icon.getAttribute('data-level'));
-                // Only load level if not completed
-                if (!icon.classList.contains('completed')) {
-                     currentLevelIndex = levelIndex; // Set current level index
-                    showScreen('gameLevels');
-                    loadLevel(currentLevelIndex);
-                }
+        // Dibujar la serpiente
+        function drawSnake() {
+            snake.forEach((segment, index) => {
+                ctx.fillStyle = index === 0 ? 'var(--color-snake-head)' : 'var(--color-snake-body)'; // Cabeza diferente color
+                ctx.strokeStyle = 'var(--color-background)'; // Borde oscuro
+                ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+                ctx.strokeRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
             });
-        });
+        }
 
+        // Dibujar la comida
+        function drawFood() {
+             // Solo dibujar comida si existe (no si ya se respondieron todas las preguntas)
+             if (food.hasOwnProperty('x') && food.hasOwnProperty('y')) {
+                ctx.fillStyle = 'var(--color-food)'; // Naranja
+                ctx.strokeStyle = 'var(--color-background)'; // Borde oscuro
+                ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+                ctx.strokeRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
+             }
+        }
 
-        // Load data for the current level
-        function loadLevel(levelIndex) {
-            if (levelIndex < gameData.length) {
-                const levelData = gameData[levelIndex];
-                levelTitle.textContent = levelData.title;
-                // Apply typing effect to the question
-                typeWriterEffect(questionTextElement, levelData.question);
-                optionsContainer.innerHTML = ''; // Clear previous options
-                feedbackElement.style.display = 'none'; // Hide feedback
+        // Mover la serpiente
+        function moveSnake() {
+            // Crear la nueva cabeza
+            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
 
-                // Create buttons for each option
-                levelData.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.textContent = option.text;
-                    button.addEventListener('click', () => handleAnswer(option));
-                    optionsContainer.appendChild(button);
-                });
+            // Añadir la nueva cabeza al principio del array
+            snake.unshift(head);
 
-                // Ensure "Regresar al Mapa" button is visible
-                backToMapButton.style.display = 'block'; // Ensure it's shown
-
+            // Comprobar si la serpiente come la comida
+            if (food.hasOwnProperty('x') && food.hasOwnProperty('y') && head.x === food.x && head.y === food.y) {
+                // Pausar el juego y mostrar la pregunta
+                pauseGame();
+                displayQuestion();
             } else {
-                // This should not happen if the progression logic is correct,
-                // but as a fallback, it could go to the reflection screen
-                 showScreen('finalReflectionScreen');
+                // Eliminar el último segmento si no come
+                snake.pop();
             }
         }
 
-        // Handle user answer
-        function handleAnswer(selectedOption) {
-            const levelData = gameData[currentLevelIndex];
-            feedbackElement.textContent = selectedOption.feedback;
+        // Comprobar colisiones
+        function checkCollision() {
+            const head = snake[0];
 
-            // Show feedback and apply correct/incorrect CSS class
-            feedbackElement.classList.remove('correct', 'incorrect');
-            if (selectedOption.correct) {
-                feedbackElement.classList.add('correct');
-                // Disable option buttons after a correct answer
-                 Array.from(optionsContainer.children).forEach(button => button.disabled = true);
-                 // Hide "Regresar al Mapa" button temporarily
-                 backToMapButton.style.display = 'none';
+            // Colisión con las paredes
+            if (head.x < 0 || head.x * gridSize >= canvasSize || head.y < 0 || head.y * gridSize >= canvasSize) {
+                return true;
+            }
 
-
-                // Mark the level icon as completed on the map and show the indicator
-                const completedIcon = document.querySelector(`.level-icon[data-level="${currentLevelIndex}"]`);
-                if (completedIcon) {
-                    completedIcon.classList.add('completed');
-                    // The indicator is shown automatically with CSS due to the 'completed' class
+            // Colisión con el propio cuerpo (empezar desde el segundo segmento)
+            for (let i = 1; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) {
+                    return true;
                 }
-
-                // Wait a moment before returning to the map or going to the final screen
-                setTimeout(() => {
-                    // Check if all levels are completed
-                    const allCompleted = Array.from(levelIcons).every(icon => icon.classList.contains('completed'));
-                    if (allCompleted) {
-                        showScreen('finalReflectionScreen');
-                    } else {
-                        showScreen('worldMapScreen'); // Return to map
-                    }
-                }, 2000); // Wait 2 seconds
-            } else {
-                feedbackElement.classList.add('incorrect');
-                 // Disable option buttons after an incorrect answer
-                Array.from(optionsContainer.children).forEach(button => button.disabled = true);
-                 // Hide "Regresar al Mapa" button temporarily
-                 backToMapButton.style.display = 'none';
-
-                 // Wait a moment before allowing retry of the same level
-                setTimeout(() => {
-                     // Re-enable buttons to try again
-                    Array.from(optionsContainer.children).forEach(button => button.disabled = false);
-                    feedbackElement.style.display = 'none'; // Hide feedback
-                     // Show "Regresar al Mapa" button again
-                    backToMapButton.style.display = 'block';
-                }, 2000); // Wait 2 seconds
             }
-             feedbackElement.style.display = 'block'; // Show feedback
+
+            return false;
         }
 
-        // Event to show final popup
-        showFinalMessageButton.addEventListener('click', () => {
-            finalPopup.style.display = 'block';
-             // Optional: You could collect reflection answers here if needed
-             // const reflection1 = document.getElementById('reflection1').value;
-             // ...
+        // Limpiar el canvas
+        function clearCanvas() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'; // Mismo fondo ligeramente transparente
+            ctx.fillRect(0, 0, canvasSize, canvasSize);
+        }
+
+        // Bucle principal del juego
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            clearCanvas();
+            drawFood();
+            moveSnake();
+
+            if (checkCollision()) {
+                endGame();
+                return;
+            }
+
+            drawSnake();
+        }
+
+        // Pausar el juego
+        function pauseGame() {
+            clearInterval(gameInterval);
+            gameRunning = false;
+        }
+
+        // Reanudar el juego
+        function resumeGame() {
+            gameRunning = true;
+            gameInterval = setInterval(gameLoop, 150); // Ajusta este valor para cambiar la velocidad
+        }
+
+        // Mostrar la pregunta en el modal
+        function displayQuestion() {
+             if (questionsAnswered >= questions.length) {
+                 // Si ya se respondieron todas las preguntas, no mostrar modal, ir a pantalla de agradecimiento
+                 showThankYou();
+                 return;
+             }
+
+            const currentQ = questions[questionsAnswered]; // Usar questionsAnswered para el índice
+
+            questionText.innerText = currentQ.question;
+            answerButtonsDiv.innerHTML = ''; // Limpiar botones anteriores
+
+            currentQ.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('answer-button');
+                button.onclick = () => checkAnswer(answer.correct);
+                answerButtonsDiv.appendChild(button);
+            });
+
+            questionModal.style.display = 'flex'; // Mostrar el modal
+        }
+
+        // Verificar la respuesta
+        function checkAnswer(isCorrect) {
+            questionModal.style.display = 'none'; // Ocultar el modal
+
+            if (isCorrect) {
+                score += 1;
+                scoreDisplay.innerText = score;
+                questionsAnswered += 1; // Incrementar contador de preguntas respondidas correctamente
+
+                 if (questionsAnswered < questions.length) {
+                     // Si aún quedan preguntas, generar nueva comida y reanudar
+                     generateFood();
+                     resumeGame();
+                 } else {
+                     // Si ya se respondieron todas las preguntas
+                     showThankYou();
+                 }
+
+            } else {
+                // Si la respuesta es incorrecta, terminar el juego
+                endGame();
+            }
+        }
+
+        // Finalizar el juego (Game Over)
+        function endGame() {
+            gameRunning = false;
+            clearInterval(gameInterval);
+            gameOverMessage.style.display = 'block';
+            restartButton.style.display = 'inline-block';
+             thankYouMessage.style.display = 'none'; // Asegurarse de que el mensaje de agradecimiento esté oculto
+        }
+
+        // Mostrar mensaje de agradecimiento
+        function showThankYou() {
+            gameRunning = false;
+            clearInterval(gameInterval);
+            gameOverMessage.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+            restartButton.style.display = 'inline-block'; // Permitir reiniciar después del agradecimiento
+             food = {}; // Asegurarse de que no haya comida visible
+             clearCanvas(); // Limpiar el canvas
+             drawSnake(); // Dibujar la serpiente final
+        }
+
+
+        // Reiniciar el juego
+        function restartGame() {
+            snake = [{ x: 10, y: 10 }];
+            dx = 0;
+            dy = 0;
+            score = 0;
+            questionsAnswered = 0; // Resetear contador de preguntas
+            scoreDisplay.innerText = score;
+            gameOverMessage.style.display = 'none';
+            thankYouMessage.style.display = 'none';
+            restartButton.style.display = 'none';
+            gameRunning = true;
+            generateFood(); // Generar la primera comida
+            gameInterval = setInterval(gameLoop, 150); // Ajusta este valor para cambiar la velocidad
+        }
+
+        // Manejar la entrada del teclado
+        document.addEventListener('keydown', event => {
+             // Solo permitir movimiento si el juego está corriendo Y el modal de preguntas no está visible
+            if (gameRunning && questionModal.style.display !== 'flex') {
+                // Evitar que la serpiente se mueva en la dirección opuesta instantáneamente
+                const goingUp = dy === -1;
+                const goingDown = dy === 1;
+                const goingLeft = dx === -1;
+                const goingRight = dx === 1;
+
+                if (event.key === 'ArrowLeft' && !goingRight) {
+                    dx = -1;
+                    dy = 0;
+                } else if (event.key === 'ArrowUp' && !goingDown) {
+                    dx = 0;
+                    dy = -1;
+                } else if (event.key === 'ArrowRight' && !goingLeft) {
+                    dx = 1;
+                    dy = 0;
+                } else if (event.key === 'ArrowDown' && !goingUp) {
+                    dx = 0;
+                    dy = 1;
+                }
+            }
         });
 
-        // Event to close final popup
-        closePopupButton.addEventListener('click', () => {
-            finalPopup.style.display = 'none';
-             // Optional: Reset the game or redirect the user
-             // To reset, you could call showScreen('introScreen'); and reset currentLevelIndex and the 'completed' classes on the icons.
-        });
+        // Iniciar el juego cuando la ventana se carga
+        window.onload = function() {
+            generateFood(); // Generar la primera comida
+            gameInterval = setInterval(gameLoop, 150); // Ajusta este valor para cambiar la velocidad
+        };
 
     </script>
 </body>
